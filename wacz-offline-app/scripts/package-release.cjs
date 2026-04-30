@@ -13,6 +13,8 @@ const version = process.env.RELEASE_VERSION || "1.0.0";
 const electronVersion = require(path.join(root, "node_modules", "electron", "package.json")).version;
 const sourceIconPng = path.join(repoRoot, "electron-app", "assets", "app-dock.png");
 const macSigningIdentity = process.env.MAC_SIGN_IDENTITY || "-";
+const electronMacApp = path.join(root, "node_modules", "electron", "dist", "Electron.app");
+const electronInstallScript = path.join(root, "node_modules", "electron", "install.js");
 
 function remove(target) {
   fs.rmSync(target, { recursive: true, force: true });
@@ -164,12 +166,26 @@ function signMacApp(targetApp) {
   execFileSync("codesign", args, { stdio: "inherit" });
 }
 
+function ensureElectronMacRuntime() {
+  if (fs.existsSync(electronMacApp)) return;
+  if (!fs.existsSync(electronInstallScript)) {
+    throw new Error(`Electron install script is missing: ${electronInstallScript}`);
+  }
+
+  console.log("[package] Electron.app is missing; running Electron installer.");
+  execFileSync(process.execPath, [electronInstallScript], { stdio: "inherit" });
+
+  if (!fs.existsSync(electronMacApp)) {
+    throw new Error(`Electron.app was not installed: ${electronMacApp}`);
+  }
+}
+
 function packageMac() {
-  const sourceApp = path.join(root, "node_modules", "electron", "dist", "Electron.app");
   const targetApp = path.join(buildRoot, "mac", `${appName}.app`);
+  ensureElectronMacRuntime();
   remove(path.join(buildRoot, "mac"));
   fs.mkdirSync(path.dirname(targetApp), { recursive: true });
-  execFileSync("ditto", [sourceApp, targetApp]);
+  execFileSync("ditto", [electronMacApp, targetApp]);
   fs.renameSync(
     path.join(targetApp, "Contents", "MacOS", "Electron"),
     path.join(targetApp, "Contents", "MacOS", appName)

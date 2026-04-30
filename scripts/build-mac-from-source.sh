@@ -2,9 +2,9 @@
 set -euo pipefail
 
 APP_NAME="Tetris N-BLOX Offline"
-REPO_URL="https://github.com/Svanny/n-blox-offline.git"
-WORKDIR="${TMPDIR:-/tmp}/n-blox-offline-build"
-DEST="$HOME/Applications"
+REPO_URL="${REPO_URL:-https://github.com/Svanny/n-blox-offline.git}"
+WORKDIR="${WORKDIR:-${TMPDIR:-/tmp}/n-blox-offline-build}"
+DEST="${DEST:-$HOME/Applications}"
 
 echo "Advanced source build for $APP_NAME"
 echo
