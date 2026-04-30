@@ -1,0 +1,23 @@
+{
+  "name": "tetris-n-blox-offline",
+  "private": true,
+  "version": "0.0.0",
+  "productName": "Tetris N-BLOX Offline",
+  "main": "main.cjs",
+  "scripts": {
+    "dev": "electron .",
+    "dev:watch": "TETRIS_HOT_RELOAD=1 electron .",
+    "check:icon": "node scripts/check-icon-preflight.cjs",
+    "check:icon:runtime": "node scripts/check-icon-runtime-wiring.cjs",
+    "check:icon:all": "pnpm check:icon && pnpm check:icon:runtime",
+    "build:mac": "node scripts/build-macos-app.cjs"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^41.2.0"
+  }
+}

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Tetris N-BLOX Offline</title>
+		<link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				background: #061018;
+				color: #dceeff;
+				font-family: Arial, sans-serif;
+				overflow: hidden;
+			}
+
+			body {
+				display: grid;
+				place-items: center;
+			}
+
+			#gameShell {
+				position: relative;
+				width: 728px;
+				height: 600px;
+				max-width: 100vw;
+				max-height: 100vh;
+			}
+
+			#gameFrame,
+			#inputBridge {
+				position: absolute;
+				inset: 0;
+				width: 100%;
+				height: 100%;
+			}
+
+			#gameFrame {
+				border: 0;
+				background: #000;
+				pointer-events: none;
+			}
+
+			#inputBridge {
+				background: transparent;
+				cursor: pointer;
+			}
+		</style>
+		<script>
+			window.canShowAds = false;
+			window.isGameAreaAdActive = false;
+
+			function getPageElapsedTimeMSEC() { return performance.now(); }
+			function trackGA4PageEvent() {}
+			function trackGA4GameEvent() {}
+			function refreshAds() {}
+			function showGameAreaAd() { onGameAreaAdComplete(); }
+			function onGameAreaAdFailed() { onGameAreaAdComplete(); }
+			function onGameAreaAdComplete() {
+				window.isGameAreaAdActive = false;
+				var frame = document.getElementById("gameFrame");
+				if (!frame) return;
+				frame.focus();
+				try {
+					frame.contentWindow.onGameAreaAdComplete();
+				} catch (error) {}
+			}
+
+			function forwardPointerEvent(event) {
+				var frame = document.getElementById("gameFrame");
+				if (!frame || !frame.contentWindow) return;
+
+				var canvas = frame.contentDocument && frame.contentDocument.getElementById("GameCanvas");
+				if (!canvas) return;
+
+				var bridgeRect = event.currentTarget.getBoundingClientRect();
+				var canvasRect = canvas.getBoundingClientRect();
+				var scaleX = canvasRect.width / bridgeRect.width;
+				var scaleY = canvasRect.height / bridgeRect.height;
+				var clientX = canvasRect.left + ((event.clientX - bridgeRect.left) * scaleX);
+				var clientY = canvasRect.top + ((event.clientY - bridgeRect.top) * scaleY);
+
+				canvas.focus();
+				canvas.dispatchEvent(new MouseEvent(event.type, {
+					bubbles: true,
+					cancelable: true,
+					button: event.button,
+					buttons: event.buttons,
+					clientX,
+					clientY,
+					screenX: event.screenX,
+					screenY: event.screenY
+				}));
+				event.preventDefault();
+			}
+
+			window.addEventListener("DOMContentLoaded", function () {
+				var bridge = document.getElementById("inputBridge");
+				["mousedown", "mouseup", "click", "mousemove"].forEach(function (eventName) {
+					bridge.addEventListener(eventName, forwardPointerEvent);
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div id="gameShell">
+			<iframe
+				id="gameFrame"
+				title="Tetris N-BLOX"
+				src="resources/project-freetetrisorg/game/game-2061DB924E2F0AC2/target-desktop/game.html?cbidg=2061DB924E2F0AC2"
+				allow="fullscreen"
+			></iframe>
+			<div id="inputBridge" aria-label="Tetris N-BLOX input layer"></div>
+		</div>
+	</body>
+</html>

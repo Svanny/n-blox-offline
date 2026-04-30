@@ -1,0 +1,19 @@
+.DS_Store
+
+# Node / Electron
+node_modules/
+electron-app/node_modules/
+
+# Build artifacts
+dist/
+electron-app/*.log
+electron-app/npm-debug.log*
+electron-app/pnpm-debug.log*
+wacz-offline-app/build/
+wacz-offline-app/.cache/
+
+# Large/local-only assets
+Evilectron/
+extracted/
+*.zip
+*.wacz

@@ -1,0 +1,17 @@
+{
+  "name": "wacz-tetris-offline",
+  "private": true,
+  "version": "0.0.0",
+  "productName": "Tetris N-BLOX Offline",
+  "main": "main.cjs",
+  "scripts": {
+    "dev": "electron .",
+    "extract:wacz": "node scripts/extract-wacz.cjs",
+    "package:mac": "node scripts/package-release.cjs mac",
+    "package:win": "node scripts/package-release.cjs win",
+    "package:all": "node scripts/package-release.cjs all"
+  },
+  "devDependencies": {
+    "electron": "^41.2.0"
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0",
+    "description": "Offline Electron wrapper for Tetris N-BLOX.",
+    "homepage": "https://github.com/Svanny/n-blox-offline",
+    "url": "https://github.com/Svanny/n-blox-offline/releases/download/v1.0.0/tetris-nblox-wacz-offline-1.0.0-win-x64.zip",
+    "hash": "16e14277e4d9b62890c224fb2a189e19b3c90d9ce984bd69532a3fed21a5357d",
+    "extract_dir": "Tetris N-BLOX Offline-win32-x64",
+    "shortcuts": [
+        [
+            "Tetris N-BLOX Offline.exe",
+            "Tetris N-BLOX Offline"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/Svanny/n-blox-offline"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Svanny/n-blox-offline/releases/download/v$version/tetris-nblox-wacz-offline-$version-win-x64.zip"
+    }
+}

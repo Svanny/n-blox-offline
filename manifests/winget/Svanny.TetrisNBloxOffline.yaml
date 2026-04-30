@@ -1,0 +1,19 @@
+PackageIdentifier: Svanny.TetrisNBloxOffline
+PackageVersion: 1.0.0
+PackageLocale: en-US
+Publisher: Svanny
+PackageName: Tetris N-BLOX Offline
+PackageUrl: https://github.com/Svanny/n-blox-offline
+License: Freeware
+ShortDescription: Offline Electron wrapper for Tetris N-BLOX.
+Installers:
+  - Architecture: x64
+    InstallerType: zip
+    NestedInstallerType: portable
+    NestedInstallerFiles:
+      - RelativeFilePath: Tetris N-BLOX Offline-win32-x64\Tetris N-BLOX Offline.exe
+        PortableCommandAlias: tetris-nblox-offline
+    InstallerUrl: https://github.com/Svanny/n-blox-offline/releases/download/v1.0.0/tetris-nblox-wacz-offline-1.0.0-win-x64.zip
+    InstallerSha256: 16E14277E4D9B62890C224FB2A189E19B3C90D9CE984BD69532A3FED21A5357D
+ManifestType: singleton
+ManifestVersion: 1.12.0

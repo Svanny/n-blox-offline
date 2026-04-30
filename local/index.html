@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tetris N-BLOX Offline</title>
+  <link rel="icon" href="favicon/favicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #d7e4f2;
+      --panel: #f5f8fc;
+      --panel-line: #9babc4;
+      --ink: #34425f;
+      --muted: #687999;
+      --button: #e8eef7;
+      --button-line: #9babc4;
+      --danger: #b82b2b;
+      /* The SWF stays full-size; the viewport clips the decorative excess. */
+      --swf-player-width: 1200px;
+      --swf-player-height: 900px;
+      --swf-width: min(calc(100vw - 36px), 820px);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.52), rgba(255,255,255,0.2)),
+        linear-gradient(180deg, #d2deec 0%, #c4d5e7 100%);
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.08), rgba(84, 110, 150, 0.05)),
+        repeating-linear-gradient(
+          -45deg,
+          rgba(117, 132, 165, 0.04) 0,
+          rgba(117, 132, 165, 0.04) 2px,
+          transparent 2px,
+          transparent 10px
+        );
+      pointer-events: none;
+    }
+
+    main {
+      position: relative;
+      width: calc(var(--swf-width) + 4px);
+      margin: 0 auto;
+      padding: 18px 0 24px;
+    }
+
+    .stage-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-items: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-frame {
+      width: calc(var(--swf-width) + 4px);
+      margin: 0 auto;
+      overflow: hidden;
+      border: 2px solid var(--panel-line);
+      background: #dce8f5;
+      box-shadow: 0 8px 18px rgba(53, 76, 110, 0.16);
+    }
+
+    #swf-container {
+      width: var(--swf-width);
+      height: var(--swf-player-height);
+      position: relative;
+      overflow: hidden;
+      background: #dce8f5;
+    }
+
+    #swf-status {
+      width: 100%;
+      padding: 20px 18px;
+      color: var(--muted);
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    #swf-container ruffle-player {
+      width: var(--swf-player-width);
+      height: var(--swf-player-height);
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      outline: none;
+    }
+
+    .panel {
+      width: calc(var(--swf-width) + 4px);
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 16px;
+      padding: 14px;
+      border: 2px solid var(--panel-line);
+      background: rgba(245, 248, 252, 0.92);
+      box-shadow: 0 6px 14px rgba(53, 76, 110, 0.08);
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      font-weight: 700;
+      font-synthesis: none;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 0.86rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .copy {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .key-button,
+    .reset-button {
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--button-line);
+      border-radius: 0;
+      color: var(--ink);
+      background: var(--button);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .key-button.listening {
+      color: #1f2c47;
+      background: #fef8d2;
+    }
+
+    .key-button.danger {
+      border-color: rgba(184, 43, 43, 0.55);
+      color: var(--danger);
+    }
+
+    .bindings {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .binding-row {
+      padding: 9px 10px;
+      color: var(--muted);
+      background: rgba(223, 233, 245, 0.72);
+      display: grid;
+      grid-template-columns: minmax(112px, 1fr) minmax(160px, auto);
+      gap: 12px;
+      align-items: center;
+      border: 1px solid rgba(117, 132, 165, 0.28);
+    }
+
+    .binding-row span {
+      font-weight: 800;
+    }
+
+    .collapsed .bindings,
+    .collapsed .row,
+    .collapsed .copy {
+      display: none;
+    }
+  </style>
+  <link rel="preload" href="ruffle/ruffle.js" as="script">
+  <link rel="preload" href="ruffle/core.ruffle.1e2252bd248624027488.js" as="script">
+  <link rel="preload" href="ruffle/core.ruffle.90db0a0ab193ed0c601b.js" as="script">
+  <link rel="preload" href="ruffle/2c12a973805ecd509f19.wasm" as="fetch" type="application/wasm" crossorigin>
+  <link rel="preload" href="ruffle/7988d187b08957e9c13e.wasm" as="fetch" type="application/wasm" crossorigin>
+  <script>
+    window.__tetrisBootErrors = [];
+    window.__tetrisFetchErrors = [];
+    window.addEventListener("error", (event) => {
+      try {
+        window.__tetrisBootErrors.push(String(event.error || event.message || event));
+      } catch {
+        // ignore
+      }
+    });
+    window.addEventListener("unhandledrejection", (event) => {
+      try {
+        window.__tetrisBootErrors.push(String(event.reason || event));
+      } catch {
+        // ignore
+      }
+    });
+
+    try {
+      const originalFetch = window.fetch?.bind(window);
+      if (originalFetch) {
+        window.fetch = async (...args) => {
+          try {
+            const response = await originalFetch(...args);
+            const url = String(args?.[0] ?? "");
+            if (!response.ok && (url.includes("/ruffle/") || url.endsWith(".wasm") || url.endsWith(".js"))) {
+              window.__tetrisFetchErrors.push(`${response.status} ${response.statusText}: ${url}`);
+            }
+            return response;
+          } catch (error) {
+            const url = String(args?.[0] ?? "");
+            if (url.includes("/ruffle/") || url.endsWith(".wasm") || url.endsWith(".js")) {
+              window.__tetrisFetchErrors.push(`FETCH ERR: ${url} :: ${String(error)}`);
+            }
+            throw error;
+          }
+        };
+      }
+    } catch {
+      // ignore
+    }
+
+    window.RufflePlayer = window.RufflePlayer || {};
+    window.RufflePlayer.config = {
+      ...window.RufflePlayer.config,
+      publicPath: "ruffle/",
+      logLevel: "info"
+    };
+
+    const isElectron = new RegExp("Electron/").test(navigator.userAgent);
+    if (!isElectron && "serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js?v=20260423d").catch(() => {});
+      });
+    }
+  </script>
+  <script src="ruffle/ruffle.js" data-ruffle-script></script>
+</head>
+<body>
+  <main>
+    <section class="stage-wrap" id="play">
+      <div class="player-frame" aria-label="SWF player frame">
+        <div id="swf-container" aria-label="SWF via Ruffle">
+          <div id="swf-status" role="status">Loading Ruffle…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" data-options-panel>
+      <h2>
+        <span>Options</span>
+        <button class="reset-button" type="button" data-toggle-options>Hide</button>
+      </h2>
+      <p class="copy">
+        Runs the archived SWF via Ruffle. Keybindings remap your chosen keys into the SWF's expected inputs.
+        Bind <b>Options</b> to toggle this panel without a mouse.
+      </p>
+
+      <div class="bindings" aria-label="Custom key bindings">
+        <label class="binding-row">
+          <span>Move left</span>
+          <button class="key-button" type="button" data-bind-action="left">Left Arrow</button>
+        </label>
+        <label class="binding-row">
+          <span>Move right</span>
+          <button class="key-button" type="button" data-bind-action="right">Right Arrow</button>
+        </label>
+        <label class="binding-row">
+          <span>Soft drop</span>
+          <button class="key-button" type="button" data-bind-action="down">Down Arrow</button>
+        </label>
+        <label class="binding-row">
+          <span>Rotate</span>
+          <button class="key-button" type="button" data-bind-action="rotate">Up Arrow</button>
+        </label>
+        <label class="binding-row">
+          <span>Hard drop</span>
+          <button class="key-button" type="button" data-bind-action="drop">Space</button>
+        </label>
+        <label class="binding-row">
+          <span>Pause</span>
+          <button class="key-button" type="button" data-bind-action="pause">P</button>
+        </label>
+        <label class="binding-row">
+          <span>Options (toggle panel)</span>
+          <button class="key-button danger" type="button" data-bind-action="options">O</button>
+        </label>
+      </div>
+
+      <div class="row">
+        <button class="reset-button" type="button" data-reset-bindings>Reset bindings</button>
+        <button class="reset-button" type="button" data-focus-game>Focus game</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="swf/swf-app.js"></script>
+</body>
+</html>

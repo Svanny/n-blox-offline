@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tetris N-BLOX HTML5 (Legacy)</title>
+  <link rel="icon" href="favicon/favicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #d7e4f2;
+      --panel: #f5f8fc;
+      --panel-line: #9babc4;
+      --ink: #34425f;
+      --muted: #687999;
+      --button: #e8eef7;
+      --button-line: #9babc4;
+    }
+
+    @font-face {
+      font-family: "Angie's New House_26pt_st";
+      src: url("resources/nblox/nblox-display.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.52), rgba(255,255,255,0.2)),
+        linear-gradient(180deg, #d2deec 0%, #c4d5e7 100%);
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.08), rgba(84, 110, 150, 0.05)),
+        repeating-linear-gradient(
+          -45deg,
+          rgba(117, 132, 165, 0.04) 0,
+          rgba(117, 132, 165, 0.04) 2px,
+          transparent 2px,
+          transparent 10px
+        );
+      pointer-events: none;
+    }
+
+    main {
+      position: relative;
+      width: min(720px, calc(100% - 20px));
+      margin: 0 auto;
+      padding: 18px 0 24px;
+    }
+
+    .stage-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-items: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-frame {
+      width: fit-content;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 2px solid var(--panel-line);
+      background: #dce8f5;
+      box-shadow: 0 8px 18px rgba(53, 76, 110, 0.16);
+    }
+
+    #game-canvas {
+      width: min(100vw - 24px, 360px);
+      height: auto;
+      display: block;
+      image-rendering: crisp-edges;
+      background: #dce8f5;
+    }
+
+    .touch-pad {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .touch-pad button,
+    .key-button,
+    .reset-button {
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--button-line);
+      border-radius: 0;
+      color: var(--ink);
+      background: var(--button);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .touch-pad {
+      margin-top: 10px;
+    }
+
+    .touch-pad button {
+      min-width: 56px;
+    }
+
+    .panel {
+      margin-top: 16px;
+      padding: 14px;
+      border: 2px solid var(--panel-line);
+      background: rgba(245, 248, 252, 0.92);
+      box-shadow: 0 6px 14px rgba(53, 76, 110, 0.08);
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      font-weight: 700;
+      font-synthesis: none;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 0.86rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .copy {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      font-weight: 700;
+    }
+
+    .bindings,
+    .timing-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .binding-row {
+      padding: 9px 10px;
+      color: var(--muted);
+      background: rgba(223, 233, 245, 0.72);
+    }
+
+    .binding-row {
+      display: grid;
+      grid-template-columns: minmax(112px, 1fr) minmax(128px, auto);
+      gap: 12px;
+      align-items: center;
+      border: 1px solid rgba(117, 132, 165, 0.28);
+    }
+
+    .binding-row span {
+      font-weight: 800;
+    }
+
+    .key-button.listening {
+      color: #1f2c47;
+      background: #fef8d2;
+    }
+
+    .reset-button {
+      width: fit-content;
+      margin-top: 16px;
+    }
+
+    .option-group {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(117, 132, 165, 0.24);
+    }
+
+    .option-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .timing-row {
+      display: grid;
+      grid-template-columns: 1fr 86px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .timing-row input {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--button-line);
+      color: var(--ink);
+      background: #ffffff;
+      font: inherit;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 560px) {
+      main {
+        width: min(100% - 16px, 760px);
+        padding-top: 12px;
+      }
+
+      .binding-row {
+        grid-template-columns: 1fr;
+      }
+
+      .touch-pad {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="stage-wrap" id="play">
+      <div class="player-frame">
+        <canvas id="game-canvas" width="360" height="360" aria-label="HTML5 Tetris N-BLOX game"></canvas>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Options (HTML5)</h2>
+      <p class="copy">
+        The stage is rebuilt to match the archived SWF more closely, while local HTML5 logic keeps direct key rebinding plus DAS/ARR timing control.
+        <a href="index.html">Switch to SWF mode</a>.
+      </p>
+      <div class="option-group">
+        <div class="option-label">
+          <span>Movement Timing</span>
+          <span data-current-timing>DAS 170ms / ARR 50ms</span>
+        </div>
+        <div class="timing-grid" aria-label="DAS and ARR settings">
+          <label class="timing-row">
+            <span>DAS delay, milliseconds</span>
+            <input type="number" min="0" max="600" step="5" value="170" data-timing="das">
+          </label>
+          <label class="timing-row">
+            <span>ARR repeat interval, milliseconds</span>
+            <input type="number" min="1" max="200" step="5" value="50" data-timing="arr">
+          </label>
+        </div>
+        <div class="preset-row">
+          <button class="reset-button" type="button" data-timing-preset="free-tetris">Free Tetris 170/50</button>
+          <button class="reset-button" type="button" data-timing-preset="nblox-fast">N-BLOX Fast 0/40</button>
+        </div>
+      </div>
+
+      <div class="option-group">
+        <div class="option-label">
+          <span>Key Bindings</span>
+          <span>Click To Rebind</span>
+        </div>
+        <div class="bindings" aria-label="Custom key bindings">
+          <label class="binding-row">
+            <span>Move left</span>
+            <button class="key-button" type="button" data-bind-action="left">Left Arrow</button>
+          </label>
+          <label class="binding-row">
+            <span>Move right</span>
+            <button class="key-button" type="button" data-bind-action="right">Right Arrow</button>
+          </label>
+          <label class="binding-row">
+            <span>Soft drop</span>
+            <button class="key-button" type="button" data-bind-action="down">Down Arrow</button>
+          </label>
+          <label class="binding-row">
+            <span>Rotate</span>
+            <button class="key-button" type="button" data-bind-action="rotate">Up Arrow</button>
+          </label>
+          <label class="binding-row">
+            <span>Hard drop</span>
+            <button class="key-button" type="button" data-bind-action="drop">Space</button>
+          </label>
+          <label class="binding-row">
+            <span>Pause</span>
+            <button class="key-button" type="button" data-bind-action="pause">P</button>
+          </label>
+          <label class="binding-row">
+            <span>Fast keys toggle</span>
+            <button class="key-button" type="button" data-bind-action="fastKeys">K</button>
+          </label>
+        </div>
+        <button class="reset-button" type="button" data-reset-bindings>Reset bindings</button>
+      </div>
+
+      <div class="touch-pad" aria-label="Touch controls">
+        <button class="reset-button" type="button" data-touch-action="left">Left</button>
+        <button class="reset-button" type="button" data-touch-action="right">Right</button>
+        <button class="reset-button" type="button" data-touch-action="rotate">Rotate</button>
+        <button class="reset-button" type="button" data-touch-action="down">Down</button>
+        <button class="reset-button" type="button" data-touch-action="drop">Drop</button>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="game/tetris-app.js"></script>
+</body>
+</html>
