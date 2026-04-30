@@ -68,12 +68,23 @@ https://support.apple.com/en-kw/guide/mac-help/open-a-mac-app-from-an-unknown-de
 
 Do not paste Terminal commands from the internet unless you trust the source and understand what they do. This script downloads code from GitHub, installs dependencies, builds an app, and copies it into `~/Applications`.
 
-Building locally avoids downloading a prebuilt app, but it does not magically make the software safe. Clone the repo, read the script, then run it:
+Building locally avoids downloading a prebuilt app, but it does not magically make the software safe. First clone the repo:
 
 ```bash
 git clone https://github.com/Svanny/n-blox-offline.git
 cd n-blox-offline
+```
+
+Inspect the script before running it. Use `less` to read it:
+
+```bash
 less scripts/build-mac-from-source.sh
+```
+
+Or use `nano` if you prefer a simple editor:
+
+```bash
+nano scripts/build-mac-from-source.sh
 ```
 
 Run it on macOS with:
