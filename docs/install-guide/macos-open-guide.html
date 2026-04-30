@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>macOS Offline App Guide</title>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				width: 1440px;
+				height: 960px;
+				margin: 0;
+				background: #061018;
+				color: #e8f6ff;
+				font-family: Inter, Arial, sans-serif;
+			}
+
+			.sheet {
+				width: 1230px;
+				height: 820px;
+				margin: 70px auto;
+				border: 2px solid #203847;
+				padding: 58px 64px;
+				background: #07131c;
+			}
+
+			h1 {
+				font-size: 54px;
+				line-height: 1;
+				margin: 0 0 14px;
+				letter-spacing: 0;
+			}
+
+			.lede {
+				font-size: 24px;
+				color: #9eb3c2;
+				margin: 0 0 48px;
+			}
+
+			.steps {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 24px;
+			}
+
+			.step,
+			.trust,
+			.warning {
+				border: 2px solid #203847;
+				background: #0d1c28;
+				border-radius: 18px;
+				padding: 28px;
+				min-height: 210px;
+			}
+
+			.step-number {
+				display: inline-grid;
+				place-items: center;
+				width: 42px;
+				height: 42px;
+				margin-bottom: 22px;
+				border-radius: 50%;
+				background: #fff15c;
+				color: #061018;
+				font-size: 22px;
+				font-weight: 800;
+			}
+
+			h2 {
+				font-size: 28px;
+				line-height: 1.14;
+				margin: 0 0 12px;
+				color: #fff15c;
+			}
+
+			p {
+				font-size: 20px;
+				line-height: 1.38;
+				margin: 0;
+				color: #c7d7e3;
+			}
+
+			.lower {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 24px;
+				margin-top: 28px;
+			}
+
+			.warning {
+				border-color: #ffb36b;
+				background: #21170d;
+			}
+
+			.warning h2 {
+				color: #ffb36b;
+			}
+
+			.trust h2 {
+				color: #42d6ff;
+			}
+
+			.button {
+				display: inline-block;
+				margin-top: 22px;
+				padding: 12px 24px;
+				border-radius: 999px;
+				background: #ffb36b;
+				color: #061018;
+				font-size: 18px;
+				font-weight: 800;
+			}
+
+			code {
+				color: #e8f6ff;
+				font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+			}
+		</style>
+	</head>
+	<body>
+		<main class="sheet">
+			<h1>macOS offline app guide</h1>
+			<p class="lede">Only use the official GitHub release zip. Do not disable Gatekeeper globally.</p>
+
+			<section class="steps">
+				<div class="step">
+					<span class="step-number">1</span>
+					<h2>Download and unzip</h2>
+					<p>Get <code>tetris-nblox-wacz-offline-1.0.0-mac-x64.zip</code> from the GitHub release.</p>
+				</div>
+				<div class="step">
+					<span class="step-number">2</span>
+					<h2>Open from Finder</h2>
+					<p>Right-click <code>Tetris N-BLOX Offline.app</code>, then choose <strong>Open</strong>.</p>
+				</div>
+				<div class="step">
+					<span class="step-number">3</span>
+					<h2>Confirm the prompt</h2>
+					<p>Click <strong>Open</strong> again only after checking the file came from the official release.</p>
+				</div>
+			</section>
+
+			<section class="lower">
+				<div class="warning">
+					<h2>If macOS still blocks it</h2>
+					<p>Open <strong>System Settings &gt; Privacy &amp; Security</strong>, then use <strong>Open Anyway</strong>. Apple shows that option for about an hour after the first blocked launch.</p>
+					<span class="button">Open Anyway</span>
+				</div>
+				<div class="trust">
+					<h2>Before opening</h2>
+					<p>Check the SHA-256 checksum in the README. Delete the file if the checksum does not match. Do not run copies from mirrors or unknown websites.</p>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>
