@@ -1,17 +1,24 @@
 # Tetris N-BLOX Offline
 
-Offline Electron builds for Tetris N-BLOX.
+Play Tetris N-BLOX from a public browser page or from an offline Electron build.
 
-This repo now has two implementations:
+## Recommended: Play in Browser
 
-- `wacz-offline-app/`: current offline HTML5/Cocos app rebuilt from `n-blox-free-tetris.wacz`
-- `electron-app/` + `local/`: older SWF/Ruffle app kept for reference
+Use the browser version first:
 
-Use `wacz-offline-app/` for new local builds and releases.
+```text
+https://svanny.github.io/n-blox-offline/
+```
 
-## Install
+No install is required, so there is no macOS Gatekeeper prompt, no Windows SmartScreen prompt, and no Terminal command to paste. On macOS Sonoma 14+, Safari can save the page as an app from `File > Add to Dock`; Apple documents that feature here:
 
-Download the release zip directly from:
+```text
+https://support.apple.com/en-kw/104996
+```
+
+## Offline App
+
+Download the release zip only from:
 
 ```text
 https://github.com/Svanny/n-blox-offline/releases/tag/v1.0.0
@@ -24,51 +31,63 @@ bbbb85344012bc1e7f507ae4cae0a9d456ecf28e45caa602a3704396b1d5f696  tetris-nblox-w
 16e14277e4d9b62890c224fb2a189e19b3c90d9ce984bd69532a3fed21a5357d  tetris-nblox-wacz-offline-1.0.0-win-x64.zip
 ```
 
-macOS may ask you to approve the app on first launch because the free build is ad-hoc signed, not Apple-notarized. Windows may show SmartScreen because the executable is unsigned. The package-manager installs below are free and checksum-backed, but they do not remove those operating-system warnings.
+This app is not Apple-notarized. macOS is warning you because Apple has not checked this build. The developer is an independent hobbyist and cannot justify Apple's $99/year Developer Program fee for this free offline game wrapper right now.
 
-### macOS with Homebrew
+Windows may show SmartScreen because this free build is unsigned and has no Microsoft reputation yet.
 
-Install Homebrew from the official site first:
+Only open files downloaded from the GitHub release above, and check the SHA-256 checksum before running them. Do not disable Gatekeeper globally. Do not run modified copies from reposts, mirrors, or unknown websites.
+
+### macOS Offline Guide
+
+![Illustrated macOS guide for opening the unsigned app](docs/install-guide/macos-open-guide.png)
+
+1. Download `tetris-nblox-wacz-offline-1.0.0-mac-x64.zip` from the GitHub release.
+2. Unzip it.
+3. Right-click `Tetris N-BLOX Offline.app`.
+4. Click `Open`.
+5. Click `Open` again in the unknown-developer prompt.
+6. If needed, use `System Settings > Privacy & Security > Open Anyway`.
+
+Apple documents the unknown-developer flow here:
 
 ```text
-https://brew.sh/
+https://support.apple.com/en-kw/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac
 ```
 
-Then install:
+### Windows Offline Guide
+
+![Illustrated Windows guide for opening the unsigned app](docs/install-guide/windows-open-guide.png)
+
+1. Download `tetris-nblox-wacz-offline-1.0.0-win-x64.zip` from the GitHub release.
+2. Extract all files.
+3. Open `Tetris N-BLOX Offline.exe`.
+4. If SmartScreen appears, click `More info`.
+5. Click `Run anyway` only if the file came from the official GitHub release and the checksum matches.
+
+## Advanced: Build Locally From Source
+
+Do not paste Terminal commands from the internet unless you trust the source and understand what they do. This script downloads code from GitHub, installs dependencies, builds an app, and copies it into `~/Applications`.
+
+Building locally avoids downloading a prebuilt app, but it does not magically make the software safe. Read the script before running it:
+
+```text
+scripts/build-mac-from-source.sh
+```
+
+Run it on macOS with:
 
 ```bash
-brew tap Svanny/n-blox-offline https://github.com/Svanny/n-blox-offline
-brew install --cask tetris-nblox-offline
+bash scripts/build-mac-from-source.sh
 ```
 
-### Windows with Scoop
+## Project Layout
 
-Install Scoop from the official site first:
+This repo has two implementations:
 
-```text
-https://scoop.sh/
-```
+- `wacz-offline-app/`: current offline HTML5/Cocos app rebuilt from `n-blox-free-tetris.wacz`
+- `electron-app/` + `local/`: older SWF/Ruffle app kept for reference
 
-Then install:
-
-```powershell
-scoop bucket add n-blox-offline https://github.com/Svanny/n-blox-offline
-scoop install tetris-nblox-offline
-```
-
-### Windows with WinGet
-
-WinGet is Microsoft's Windows Package Manager:
-
-```text
-https://learn.microsoft.com/windows/package-manager/winget/
-```
-
-This repo includes a local WinGet manifest in `manifests/winget/`. Until the package is accepted into the public WinGet community repository, install from a local clone:
-
-```powershell
-winget install --manifest .\manifests\winget\Svanny.TetrisNBloxOffline.yaml
-```
+Use `wacz-offline-app/` for new local builds and releases.
 
 ## Run the WACZ app locally
 

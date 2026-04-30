@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960">
+  <rect width="1440" height="960" fill="#061018"/>
+  <text x="72" y="92" fill="#e8f6ff" font-family="Arial, sans-serif" font-size="48" font-weight="700">Windows offline app guide</text>
+  <text x="72" y="134" fill="#9eb3c2" font-family="Arial, sans-serif" font-size="24">SmartScreen may warn because this free build is unsigned and has no Microsoft reputation yet.</text>
+  <g transform="translate(72 190)">
+    <rect width="396" height="260" rx="18" fill="#0d1c28" stroke="#203847" stroke-width="2"/>
+    <text x="28" y="48" fill="#fff15c" font-family="Arial, sans-serif" font-size="24" font-weight="700">1. Download and extract</text>
+    <rect x="42" y="82" width="312" height="112" rx="10" fill="#132b3a"/>
+    <text x="70" y="128" fill="#e8f6ff" font-family="Arial, sans-serif" font-size="22">GitHub Release</text>
+    <text x="70" y="162" fill="#9eb3c2" font-family="Arial, sans-serif" font-size="18">tetris-nblox...win-x64.zip</text>
+    <rect x="110" y="210" width="176" height="34" rx="17" fill="#42d6ff"/>
+    <text x="151" y="233" fill="#061018" font-family="Arial, sans-serif" font-size="17" font-weight="700">Extract all</text>
+  </g>
+  <g transform="translate(522 190)">
+    <rect width="396" height="260" rx="18" fill="#0d1c28" stroke="#203847" stroke-width="2"/>
+    <text x="28" y="48" fill="#fff15c" font-family="Arial, sans-serif" font-size="24" font-weight="700">2. Open the exe</text>
+    <rect x="54" y="86" width="288" height="108" rx="8" fill="#f5f5f7"/>
+    <rect x="76" y="112" width="38" height="38" rx="8" fill="#0b74de"/>
+    <text x="130" y="138" fill="#111827" font-family="Arial, sans-serif" font-size="18">Tetris N-BLOX Offline.exe</text>
+    <text x="130" y="166" fill="#6b7280" font-family="Arial, sans-serif" font-size="15">Application</text>
+  </g>
+  <g transform="translate(972 190)">
+    <rect width="396" height="260" rx="18" fill="#0d1c28" stroke="#203847" stroke-width="2"/>
+    <text x="28" y="48" fill="#fff15c" font-family="Arial, sans-serif" font-size="24" font-weight="700">3. SmartScreen prompt</text>
+    <rect x="46" y="84" width="304" height="136" rx="4" fill="#0078d4"/>
+    <text x="70" y="122" fill="#fff" font-family="Arial, sans-serif" font-size="20" font-weight="700">Windows protected your PC</text>
+    <text x="70" y="158" fill="#d8ecff" font-family="Arial, sans-serif" font-size="15">Check the source and checksum first.</text>
+    <text x="70" y="196" fill="#fff" font-family="Arial, sans-serif" font-size="17" text-decoration="underline">More info</text>
+  </g>
+  <g transform="translate(72 530)">
+    <rect width="616" height="252" rx="18" fill="#21170d" stroke="#ffb36b" stroke-width="2"/>
+    <text x="28" y="50" fill="#ffb36b" font-family="Arial, sans-serif" font-size="26" font-weight="700">Only continue if you trust the file</text>
+    <text x="28" y="92" fill="#e8f6ff" font-family="Arial, sans-serif" font-size="22">Click "More info", then "Run anyway".</text>
+    <rect x="28" y="138" width="150" height="42" rx="2" fill="#e5e7eb"/>
+    <text x="57" y="166" fill="#111827" font-family="Arial, sans-serif" font-size="18" font-weight="700">Run anyway</text>
+  </g>
+  <g transform="translate(752 530)">
+    <rect width="616" height="252" rx="18" fill="#0d1c28" stroke="#203847" stroke-width="2"/>
+    <text x="28" y="50" fill="#42d6ff" font-family="Arial, sans-serif" font-size="26" font-weight="700">Before opening</text>
+    <text x="28" y="92" fill="#e8f6ff" font-family="Arial, sans-serif" font-size="22">Use the official GitHub release and README checksum.</text>
+    <text x="28" y="132" fill="#9eb3c2" font-family="Arial, sans-serif" font-size="19">Do not run modified copies from reposts, mirrors, or unknown websites.</text>
+  </g>
+</svg>
