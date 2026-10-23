@@ -11,6 +11,16 @@ This repo has two implementations:
 
 Use `wacz-offline-app/` for new local builds and releases.
 
+Source builds require a patched Node.js release: 22.23.4+, 24.22.1+, or
+26.12.1+ within the corresponding major version. `.nvmrc` selects 24.22.1.
+See the [October 2026 Node.js security release](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases).
+Both desktop wrappers use the oldest supported Electron line, 43.8.3+, for its
+Chromium and installer security fixes. Electron bundles its own Node.js runtime:
+[43.8.3 still reports Node.js 24.22.0](https://releases.electronjs.org/release/v43.8.3),
+so updating build-time Node.js does not establish that the packaged runtime has
+the October 21 fixes. Check the embedded Node.js version and certificate store
+when rebuilding apps with a later patched Electron release.
+
 ## Run the WACZ App Locally
 
 ```bash
