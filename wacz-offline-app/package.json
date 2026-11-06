@@ -12,7 +12,7 @@
     "package:all": "node scripts/package-release.cjs all"
   },
   "devDependencies": {
-    "electron": "^43.8.3"
+    "electron": "^43.8.7"
   },
   "engines": {
     "node": ">=22.23.4 <23 || >=24.22.1 <25 || >=26.12.1 <27"

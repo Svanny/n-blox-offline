@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       electron:
-        specifier: ^43.8.3
-        version: 43.8.3
+        specifier: ^43.8.7
+        version: 43.8.7
 
 packages:
 
@@ -34,8 +34,8 @@ packages:
       supports-color:
         optional: true
 
-  electron@43.8.3:
-    resolution: {integrity: sha512-KgvSm3bHXz96hSXzqxyRjLeli80rIdszbDQFKlRSfckmGazTPCH/CxUN31Dp9c5rFKTQSNf9gPJRWl1yWNB3pA==}
+  electron@43.8.7:
+    resolution: {integrity: sha512-F3Z7xEYlS62Re9Y2WCRhB8jFIkDwpUO7wjJ85l8NpPEgQ/CEyBvwtYEsNY2lioT7VOWi2vBrnMckCvXBkq+Cnw==}
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
@@ -94,7 +94,7 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  electron@43.8.3:
+  electron@43.8.7:
     dependencies:
       '@electron-internal/extract-zip': 1.0.5
       '@electron/get': 5.1.0
