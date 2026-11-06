@@ -1,6 +1,6 @@
 const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
-const https = require("node:https");
+const { downloadArtifact } = require("@electron/get");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
@@ -11,6 +11,7 @@ const appName = "Tetris N-BLOX Offline";
 const artifactBase = "tetris-nblox-wacz-offline";
 const version = process.env.RELEASE_VERSION || "1.0.0";
 const electronVersion = require(path.join(root, "node_modules", "electron", "package.json")).version;
+const electronChecksums = require(path.join(root, "node_modules", "electron", "checksums.json"));
 const sourceIconPng = path.join(repoRoot, "electron-app", "assets", "app-dock.png");
 const macSigningIdentity = process.env.MAC_SIGN_IDENTITY || "-";
 const electronMacApp = path.join(root, "node_modules", "electron", "dist", "Electron.app");
@@ -180,9 +181,19 @@ function ensureElectronMacRuntime() {
   }
 }
 
+function macRuntimeArch() {
+  const executable = path.join(electronMacApp, "Contents", "MacOS", "Electron");
+  const architectures = execFileSync("lipo", ["-archs", executable], { encoding: "utf8" }).trim().split(/\s+/);
+  if (architectures.length === 1 && architectures[0] === "x86_64") return "x64";
+  if (architectures.length === 1 && architectures[0] === "arm64") return "arm64";
+  if (architectures.length === 2 && architectures.includes("x86_64") && architectures.includes("arm64")) return "universal";
+  throw new Error(`Unsupported Electron macOS architecture: ${architectures.join(" ")}`);
+}
+
 function packageMac() {
   const targetApp = path.join(buildRoot, "mac", `${appName}.app`);
   ensureElectronMacRuntime();
+  const arch = macRuntimeArch();
   remove(path.join(buildRoot, "mac"));
   fs.mkdirSync(path.dirname(targetApp), { recursive: true });
   execFileSync("ditto", [electronMacApp, targetApp]);
@@ -198,46 +209,21 @@ function packageMac() {
   writeAppSource(path.join(targetApp, "Contents", "Resources", "app"));
   signMacApp(targetApp);
 
-  const artifact = path.join(releasesRoot, `${artifactBase}-${version}-mac-x64.zip`);
+  const artifact = path.join(releasesRoot, `${artifactBase}-${version}-mac-${arch}.zip`);
   fs.mkdirSync(releasesRoot, { recursive: true });
   zipDirectory(targetApp, artifact);
   console.log(`macOS artifact: ${artifact}`);
 }
 
-function download(url, target) {
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  if (fs.existsSync(target)) return Promise.resolve();
-
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(target);
-    https.get(url, (response) => {
-      if (response.statusCode === 302 || response.statusCode === 301) {
-        file.close();
-        remove(target);
-        download(response.headers.location, target).then(resolve, reject);
-        return;
-      }
-      if (response.statusCode !== 200) {
-        file.close();
-        remove(target);
-        reject(new Error(`Download failed (${response.statusCode}): ${url}`));
-        return;
-      }
-      response.pipe(file);
-      file.on("finish", () => file.close(resolve));
-    }).on("error", (error) => {
-      file.close();
-      remove(target);
-      reject(error);
-    });
-  });
-}
-
 async function packageWindows() {
-  const cacheDir = path.join(root, ".cache");
-  const electronZip = path.join(cacheDir, `electron-v${electronVersion}-win32-x64.zip`);
-  const url = `https://github.com/electron/electron/releases/download/v${electronVersion}/electron-v${electronVersion}-win32-x64.zip`;
-  await download(url, electronZip);
+  const electronZip = await downloadArtifact({
+    version: electronVersion,
+    artifactName: "electron",
+    platform: "win32",
+    arch: "x64",
+    cacheRoot: path.join(root, ".cache"),
+    checksums: electronChecksums
+  });
 
   const winRoot = path.join(buildRoot, "win");
   const appDir = path.join(winRoot, `${appName}-win32-x64`);

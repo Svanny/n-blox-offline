@@ -25,8 +25,14 @@ const MIME_TYPES = {
 app.setName(APP_NAME);
 
 function safeResolvePath(urlPath) {
-  const pathname = decodeURIComponent((urlPath || "/").split("?")[0]);
+  let pathname;
+  try {
+    pathname = decodeURIComponent((urlPath || "/").split("?")[0]);
+  } catch {
+    return null;
+  }
   const normalized = pathname.replaceAll("\\", "/");
+  if (!normalized.startsWith("/") || normalized.includes("\0")) return null;
   const relativePath = normalized === "/" ? "/index.html" : normalized;
   const resolved = path.resolve(SITE_ROOT, `.${relativePath}`);
   if (!resolved.startsWith(SITE_ROOT + path.sep)) return null;
@@ -52,11 +58,25 @@ function createServer() {
       const finalPath = stat.isDirectory() ? path.join(filePath, "index.html") : filePath;
       const contentType = MIME_TYPES[path.extname(finalPath)] || "application/octet-stream";
 
-      res.writeHead(200, {
+      const headers = {
         "Cache-Control": "no-store",
         "Content-Type": contentType
+      };
+      const stream = fs.createReadStream(finalPath);
+      stream.on("error", (error) => {
+        if (res.headersSent) {
+          res.destroy();
+          return;
+        }
+        const status = error.code === "ENOENT" ? 404 : 500;
+        res.writeHead(status, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end(status === 404 ? "Not found" : "Server error");
       });
-      fs.createReadStream(finalPath).pipe(res);
+      stream.once("open", () => {
+        res.writeHead(200, headers);
+        stream.pipe(res);
+      });
+      res.once("close", () => stream.destroy());
     });
   });
 }
@@ -78,7 +98,7 @@ function listen(server) {
 function blockExternalRequests(port) {
   const allowedOrigin = `http://127.0.0.1:${port}`;
   session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
-    if (details.url.startsWith(allowedOrigin)) {
+    if (isLocalUrl(details.url, allowedOrigin)) {
       callback({ cancel: false });
       return;
     }
@@ -86,6 +106,15 @@ function blockExternalRequests(port) {
     console.log(`[blocked-request] ${details.url}`);
     callback({ cancel: true });
   });
+}
+
+function isLocalUrl(url, allowedOrigin) {
+  try {
+    const parsed = new URL(url);
+    return parsed.origin === allowedOrigin && !parsed.username && !parsed.password;
+  } catch {
+    return false;
+  }
 }
 
 async function createWindow(port) {
@@ -109,6 +138,12 @@ async function createWindow(port) {
 
   win.setMenuBarVisibility(false);
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  const allowedOrigin = `http://127.0.0.1:${port}`;
+  for (const eventName of ["will-navigate", "will-redirect"]) {
+    win.webContents.on(eventName, (event, url) => {
+      if (!isLocalUrl(url, allowedOrigin)) event.preventDefault();
+    });
+  }
   win.webContents.on("console-message", (_event, level, message, line, sourceId) => {
     console.log(`[renderer:${level}] ${message} ${sourceId || ""}:${line || ""}`);
   });

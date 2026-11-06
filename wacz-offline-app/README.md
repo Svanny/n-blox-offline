@@ -29,6 +29,9 @@ Outputs:
 ```
 
 The macOS zip contains `Tetris N-BLOX Offline.app`.
+The examples show an Intel (`mac-x64`) build. The macOS ZIP suffix is read from
+the actual Electron executable: `mac-x64`, `mac-arm64`, or `mac-universal`.
+Use that suffix in the commands below when building on a different architecture.
 
 The Windows zip contains a portable x64 app folder. Open `Tetris N-BLOX Offline.exe` inside it.
 
