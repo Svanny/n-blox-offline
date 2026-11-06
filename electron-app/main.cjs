@@ -30,8 +30,14 @@ const MIME_TYPES = {
 };
 
 function safeResolvePath(urlPath) {
-  const decoded = decodeURIComponent(urlPath.split("?")[0] || "/");
+  let decoded;
+  try {
+    decoded = decodeURIComponent((urlPath || "/").split("?")[0]);
+  } catch {
+    return null;
+  }
   const normalized = decoded.replaceAll("\\", "/");
+  if (!normalized.startsWith("/") || normalized.includes("\0")) return null;
   const rawPath = normalized === "/" ? "/index.html" : normalized;
   const resolved = path.resolve(LOCAL_ROOT, `.${rawPath}`);
   if (!resolved.startsWith(LOCAL_ROOT + path.sep)) return null;
@@ -77,12 +83,20 @@ function createServer() {
       }
 
       const stream = fs.createReadStream(finalPath);
-      stream.on("error", () => {
-        res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-        res.end("Server error");
+      stream.on("error", (error) => {
+        if (res.headersSent) {
+          res.destroy();
+          return;
+        }
+        const status = error.code === "ENOENT" ? 404 : 500;
+        res.writeHead(status, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end(status === 404 ? "Not found" : "Server error");
       });
-      res.writeHead(200, headers);
-      stream.pipe(res);
+      stream.once("open", () => {
+        res.writeHead(200, headers);
+        stream.pipe(res);
+      });
+      res.once("close", () => stream.destroy());
     });
   });
 
@@ -163,6 +177,15 @@ function applyDockIcon(reason) {
   }
 }
 
+function isLocalUrl(url, allowedOrigin) {
+  try {
+    const parsed = new URL(url);
+    return parsed.origin === allowedOrigin && !parsed.username && !parsed.password;
+  } catch {
+    return false;
+  }
+}
+
 async function createWindow(url) {
   const win = new BrowserWindow({
     width: 940,
@@ -173,10 +196,18 @@ async function createWindow(url) {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: false,
+      sandbox: true,
       preload: path.join(__dirname, "preload.cjs")
     }
   });
+
+  win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  const allowedOrigin = new URL(url).origin;
+  for (const eventName of ["will-navigate", "will-redirect"]) {
+    win.webContents.on(eventName, (event, targetUrl) => {
+      if (!isLocalUrl(targetUrl, allowedOrigin)) event.preventDefault();
+    });
+  }
 
   win.webContents.on("console-message", (event, ...args) => {
     // Electron 41: console-message is moving to a single details param.

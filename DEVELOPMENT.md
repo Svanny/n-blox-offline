@@ -46,10 +46,34 @@ releases/tetris-nblox-wacz-offline-1.0.0-win-x64.zip
 ```
 
 The macOS artifact contains `Tetris N-BLOX Offline.app`.
+The examples show an Intel (`mac-x64`) build. The macOS ZIP suffix is read from
+the actual Electron executable: `mac-x64`, `mac-arm64`, or `mac-universal`.
+Use that suffix in the commands below when building on a different architecture.
 
 The Windows artifact contains a portable x64 folder with `Tetris N-BLOX Offline.exe`.
+The Windows Electron ZIP is checksum-verified by `@electron/get` against the
+official checksums bundled in the installed Electron package, including cache hits.
 
 Local macOS builds are ad-hoc signed. To distribute without Gatekeeper malware warnings, sign with a `Developer ID Application` certificate, notarize with `xcrun notarytool`, staple the ticket with `xcrun stapler`, then zip the stapled `.app`. See `wacz-offline-app/README.md` for the exact command sequence.
+
+## Verification
+
+Install both wrappers before running the shared test suite:
+
+```bash
+(cd electron-app && corepack pnpm install --frozen-lockfile --ignore-scripts)
+(cd wacz-offline-app && corepack pnpm install --frozen-lockfile --ignore-scripts)
+node --test tests/*.test.mjs
+node electron-app/scripts/check-icon-runtime-wiring.cjs
+```
+
+On macOS, also run `corepack pnpm check:icon:all` and `corepack pnpm build:mac`
+from `electron-app/`, then `corepack pnpm package:all` from `wacz-offline-app/`.
+These require macOS packaging tools and ImageMagick. Launch both development
+wrappers and the packaged apps to verify gameplay, keyboard input, audio,
+offline loading, and icons. Keep the renderer sandbox enabled during testing;
+the older Ruffle wrapper now uses a sandboxed preload. Automated tests do not
+replace these native checks or Windows portable-app testing.
 
 ## Offline Behavior
 

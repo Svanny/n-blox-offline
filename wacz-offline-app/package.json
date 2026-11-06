@@ -12,6 +12,7 @@
     "package:all": "node scripts/package-release.cjs all"
   },
   "devDependencies": {
+    "@electron/get": "^5.1.0",
     "electron": "^43.8.7"
   },
   "engines": {
